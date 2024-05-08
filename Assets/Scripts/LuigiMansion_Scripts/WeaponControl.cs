@@ -5,6 +5,9 @@ using UnityEngine.InputSystem;
 
 public class WeaponControl : MonoBehaviour
 {
+    public delegate void AttackingGhost(bool attacking);
+    public AttackingGhost attackingGhost;
+
     [Header("Transform Settings")]
     public Transform playerTransform;
     public Transform suckingPoint;
@@ -19,6 +22,11 @@ public class WeaponControl : MonoBehaviour
     {
         listOfGhost = new List<Ghost>();
         listOfGhost.Clear();
+    }
+
+    public void Init(AttackingGhost attackingGhostCallback)
+    {
+        attackingGhost = attackingGhostCallback;
     }
 
     private void OnEnable()
@@ -46,7 +54,10 @@ public class WeaponControl : MonoBehaviour
         if (enteredGhost)
         {
             if (!listOfGhost.Contains(enteredGhost))
+            {
                 listOfGhost.Add(enteredGhost);
+                enteredGhost.ghostJustGotScuked += SetAttackingGhosts;
+            }
         }
     }
 
@@ -74,19 +85,28 @@ public class WeaponControl : MonoBehaviour
 
         foreach (Ghost ghost in listOfGhost)
         {
-            ghost.transform.SetParent(playerTransform);
-            ghost.SetBeingSuck(true, suckingPoint);
+            if (ghost.isStunned)
+            {
+                ghost.transform.SetParent(playerTransform);
+                ghost.SetBeingSuck(true, suckingPoint);
+            }
         }
     }
 
     private void OnStopSucking(InputAction.CallbackContext callback)
     {
         isSucking = false;
+        SetAttackingGhosts(false);
 
         foreach (Ghost ghost in listOfGhost)
         {
             ghost.transform.SetParent(null);
             ghost.SetBeingSuck(false);
         }
+    }
+
+    private void SetAttackingGhosts(bool setAttack)
+    {
+        attackingGhost?.Invoke(setAttack);
     }
 }

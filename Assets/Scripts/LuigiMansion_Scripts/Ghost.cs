@@ -5,12 +5,14 @@ using DG.Tweening;
 
 public class Ghost : MonoBehaviour
 {
+    public delegate void GhostGetSucked(bool getSucked);
+    public GhostGetSucked ghostJustGotScuked;
+
     [Header("Ghost Setting")]
     public float suckingSpeed = 2.0f;
 
     [Header("Debugging")]
-    [SerializeReference]
-    private bool isBeingAttack = false;
+    public bool isStunned = false;
 
     [SerializeReference]
     private bool isBeingSuck = false;
@@ -21,10 +23,13 @@ public class Ghost : MonoBehaviour
     {
         if (isBeingSuck)
         {
-            if (isBeingAttack)
+            if (isStunned)
             {
                 // move to sucking point;
-                transform.position += (suckingPoint.position - transform.position) * Time.deltaTime * suckingSpeed;
+                transform.position += (suckingPoint.position - transform.position) * Time.deltaTime/* * suckingSpeed*/;
+
+                if (transform.position == suckingPoint.position)
+                    ghostJustGotScuked?.Invoke(true);
             }
         }
     }
@@ -35,7 +40,7 @@ public class Ghost : MonoBehaviour
 
         // just for testing;
         if (!isBeingSuck)
-            isBeingAttack = false;
+            isStunned = false;
         else
         {
             if (suckingPoint)
@@ -45,14 +50,15 @@ public class Ghost : MonoBehaviour
 
     public void SetBeingAttack(bool attacking)
     {
-        isBeingAttack = attacking;
+        isStunned = attacking;
 
-        if (isBeingAttack)
+        if (isStunned)
         {
             DOVirtual.Int(2, 0, 2, TweenCallback)
-            .SetEase(Ease.Linear);
+                .SetEase(Ease.Linear);
         }
-    } 
+    }
+
 
     private void TweenCallback(int num)
     {
