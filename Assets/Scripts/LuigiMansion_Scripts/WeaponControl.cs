@@ -5,6 +5,10 @@ using UnityEngine.InputSystem;
 
 public class WeaponControl : MonoBehaviour
 {
+    [Header("Transform Settings")]
+    public Transform playerTransform;
+    public Transform suckingPoint;
+
     private MyPlayer controls;
     private List<Ghost> listOfGhost;
 
@@ -23,8 +27,8 @@ public class WeaponControl : MonoBehaviour
         {
             controls = new MyPlayer();
             controls.Player.Transform.performed += OnFlash;
-            controls.Player.Fire.performed += OnFireStart;
-            controls.Player.Fire.canceled += OnFireStop;
+            controls.Player.Fire.performed += OnSucking;
+            controls.Player.Fire.canceled += OnStopSucking;
         }
 
         controls.Player.Enable();
@@ -60,17 +64,29 @@ public class WeaponControl : MonoBehaviour
     {
         foreach (Ghost ghost in listOfGhost)
         {
-            Debug.Log(ghost);
+            ghost.SetBeingAttack(true);
         }
     }
 
-    private void OnFireStart(InputAction.CallbackContext callback)
+    private void OnSucking(InputAction.CallbackContext callback)
     {
         isSucking = true;
+
+        foreach (Ghost ghost in listOfGhost)
+        {
+            ghost.transform.SetParent(playerTransform);
+            ghost.SetBeingSuck(true, suckingPoint);
+        }
     }
 
-    private void OnFireStop(InputAction.CallbackContext callback)
+    private void OnStopSucking(InputAction.CallbackContext callback)
     {
         isSucking = false;
+
+        foreach (Ghost ghost in listOfGhost)
+        {
+            ghost.transform.SetParent(null);
+            ghost.SetBeingSuck(false);
+        }
     }
 }
