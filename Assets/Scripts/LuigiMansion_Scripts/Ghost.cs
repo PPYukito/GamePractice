@@ -38,7 +38,6 @@ public class Ghost : MonoBehaviour
         //detect area to get capture
         if (other.gameObject.CompareTag(captureSphereTag))
         {
-            Debug.Log("Hello");
             if (isBeingSuck && isStunned)
                 ghostJustGotScuked?.Invoke(true);
         }

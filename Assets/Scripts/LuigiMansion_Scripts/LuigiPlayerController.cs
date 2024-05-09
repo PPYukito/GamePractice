@@ -22,7 +22,10 @@ public class LuigiPlayerController : MonoBehaviour
         if (attackingGhost != attacking)
             attackingGhost = attacking;
 
-        RandomMovement.enabled = attacking;
+        if (attacking)
+            RandomMovement.StartRandomMovement();
+        else
+            RandomMovement.StopRandomMovement();
     }
 
     private void ActivePlayerRotation(bool activeRotate)

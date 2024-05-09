@@ -18,8 +18,8 @@ public class WeaponControl : MonoBehaviour
     private MyPlayer controls;
     private List<Ghost> listOfGhost;
 
-    private bool isSucking = false;
-    private bool isBlowing = false;
+    //private bool isSucking = false;
+    //private bool isBlowing = false;
 
     private void Start()
     {
@@ -33,20 +33,12 @@ public class WeaponControl : MonoBehaviour
         setPlayerRotate = setPlayerRotateCallback;
     }
 
-    private void Update()
-    {
-        if (isSucking)
-        {
-
-        }
-    }
-
     private void OnEnable()
     {
         if (controls == null)
         {
             controls = new MyPlayer();
-            controls.Player.Transform.performed += OnFlash;
+            controls.Player.Transform.performed += OnFlash; //able to use OnTransform by PlayerInout component for reading input instead of subscibe;
             controls.Player.Fire.performed += OnSucking;
             controls.Player.Fire.canceled += OnStopSucking;
         }
@@ -86,6 +78,14 @@ public class WeaponControl : MonoBehaviour
         }
     }
 
+    //private void OnTransform(InputValue value)
+    //{
+    //    foreach (Ghost ghost in listOfGhost)
+    //    {
+    //        ghost.SetBeingAttack(true);
+    //    }
+    //}
+
     private void OnFlash(InputAction.CallbackContext callback)
     {
         foreach (Ghost ghost in listOfGhost)
@@ -96,7 +96,7 @@ public class WeaponControl : MonoBehaviour
 
     private void OnSucking(InputAction.CallbackContext callback)
     {
-        isSucking = true;
+        //isSucking = true;
         setPlayerRotate?.Invoke(true);
 
         foreach (Ghost ghost in listOfGhost)
@@ -111,7 +111,7 @@ public class WeaponControl : MonoBehaviour
 
     private void OnStopSucking(InputAction.CallbackContext callback)
     {
-        isSucking = false;
+        //isSucking = false;
         setPlayerRotate?.Invoke(false);
         SetAttackingGhosts(false);
 

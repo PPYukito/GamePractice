@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class RandomMovement : MonoBehaviour
 {
@@ -16,20 +17,45 @@ public class RandomMovement : MonoBehaviour
     public float yRot;
 
     private bool right;
+    private DefaultInputActions actionInput;
+    private bool capturing = false;
+
+    private void Start()
+    {
+        actionInput = new DefaultInputActions();
+        actionInput.Enable();
+    }
 
     private void OnEnable()
     {
+        if (actionInput == null)
+            actionInput = new DefaultInputActions();
+        actionInput.Enable();
+    }
+
+    private void OnDisable()
+    {
+        actionInput.Disable();
+    }
+
+    public void StartRandomMovement()
+    {
+        capturing = true;
         StartCoroutine(RotateTo());
         StartCoroutine(ChooseDir());
     }
 
     private void Update()
     {
-        CharacterController.Move(transform.forward * capturingSpeed * Time.deltaTime);
+        if (capturing)
+            CharacterController.Move(transform.forward * capturingSpeed * Time.deltaTime); 
+
+        // angle calculation
     }
 
-    private void OnDisable()
+    public void StopRandomMovement()
     {
+        capturing = false;
         StopCoroutine("RotateTo");
         StopCoroutine("ChooseDir");
         StopAllCoroutines();
@@ -61,5 +87,13 @@ public class RandomMovement : MonoBehaviour
         yield return new WaitForSeconds(Random.Range(1, 3));
         right = (Random.value > 0.5f);
         StartCoroutine(ChooseDir());
+    }
+
+    private void OnMove(InputValue value)
+    {
+        if (capturing)
+        {
+            Debug.Log($"{actionInput.Player.Move.ReadValue<Vector2>().x}");
+        }
     }
 }
