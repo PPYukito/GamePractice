@@ -6,7 +6,7 @@ public class LuigiPlayerController : MonoBehaviour
 {
     [Header("Controllers")]
     public WeaponControl WeaponControl;
-    public RandomRotation RandomRotation;
+    public RandomMovement RandomMovement;
     public MovementInput MovementInput;
 
     private bool attackingGhost = false;
@@ -22,7 +22,7 @@ public class LuigiPlayerController : MonoBehaviour
         if (attackingGhost != attacking)
             attackingGhost = attacking;
 
-        RandomRotation.enabled = attacking;
+        RandomMovement.enabled = attacking;
     }
 
     private void ActivePlayerRotation(bool activeRotate)

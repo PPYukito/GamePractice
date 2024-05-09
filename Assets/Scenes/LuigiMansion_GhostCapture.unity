@@ -240,7 +240,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 218698155}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -1402,9 +1402,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1728197475}
   m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 329e64de10c7b9347938259cdab1d6c1, type: 3}
+  m_Script: {fileID: 11500000, guid: 45eef0fa287fcc049bd93c82a19ebdec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CharacterController: {fileID: 1728197491}
+  capturingSpeed: 3
   rotateSpeed: 100
   lerpEase:
     serializedVersion: 2
@@ -1444,7 +1446,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   WeaponControl: {fileID: 2127013982}
-  RandomRotation: {fileID: 1728197487}
+  RandomMovement: {fileID: 1728197487}
   MovementInput: {fileID: 1728197489}
 --- !u!114 &1728197489 stripped
 MonoBehaviour:
@@ -1458,6 +1460,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: caa9f165e2b4f1a4f9522501717c095d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!143 &1728197491 stripped
+CharacterController:
+  m_CorrespondingSourceObject: {fileID: 4757836856755875627, guid: bd6ee82c5e06b3f4f86113cbf8261ae1,
+    type: 3}
+  m_PrefabInstance: {fileID: 2082942409}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1732799859 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4935914161864750418, guid: bd6ee82c5e06b3f4f86113cbf8261ae1,

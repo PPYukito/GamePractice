@@ -2,17 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RandomRotation : MonoBehaviour
+public class RandomMovement : MonoBehaviour
 {
-    private bool right;
+    [Header("Controllers")]
+    public CharacterController CharacterController;
+
+    [Header("Movement Settings")]
+    public float capturingSpeed = 3.0f;
+
+    [Header("Random Rotate Settings")]
     public float rotateSpeed = 10;
     public AnimationCurve lerpEase = default;
     public float yRot;
+
+    private bool right;
 
     private void OnEnable()
     {
         StartCoroutine(RotateTo());
         StartCoroutine(ChooseDir());
+    }
+
+    private void Update()
+    {
+        CharacterController.Move(transform.forward * capturingSpeed * Time.deltaTime);
     }
 
     private void OnDisable()
