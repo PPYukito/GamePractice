@@ -9,7 +9,9 @@ public class Ghost : MonoBehaviour
     public GhostGetSucked ghostJustGotScuked;
 
     [Header("Ghost Setting")]
-    public float suckingSpeed = 2.0f;
+    public float suckingSpeed = 1.0f;
+    public string captureSphereTag;
+    public LayerMask captureSphereLayer;
 
     [Header("Debugging")]
     public bool isStunned = false;
@@ -26,12 +28,26 @@ public class Ghost : MonoBehaviour
             if (isStunned)
             {
                 // move to sucking point;
-                transform.position += (suckingPoint.position - transform.position) * Time.deltaTime/* * suckingSpeed*/;
-
-                if (transform.position == suckingPoint.position)
-                    ghostJustGotScuked?.Invoke(true);
+                transform.position += (suckingPoint.position - transform.position) * Time.deltaTime * suckingSpeed;
             }
         }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        //detect area to get capture
+        if (other.gameObject.CompareTag(captureSphereTag))
+        {
+            Debug.Log("Hello");
+            if (isBeingSuck && isStunned)
+                ghostJustGotScuked?.Invoke(true);
+        }
+
+        //I don't undertand how this works, but it works;
+        //if ( (captureSphereLayer & (1 << other.gameObject.layer)) != 0 )
+        //{
+        //    //Call method you want;
+        //}
     }
 
     public void SetBeingSuck(bool sucking, Transform suckingPoint = null)

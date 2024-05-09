@@ -8,6 +8,9 @@ public class WeaponControl : MonoBehaviour
     public delegate void AttackingGhost(bool attacking);
     public AttackingGhost attackingGhost;
 
+    public delegate void SetPlayerRotation(bool activeRotate);
+    public SetPlayerRotation setPlayerRotate;
+
     [Header("Transform Settings")]
     public Transform playerTransform;
     public Transform suckingPoint;
@@ -24,9 +27,18 @@ public class WeaponControl : MonoBehaviour
         listOfGhost.Clear();
     }
 
-    public void Init(AttackingGhost attackingGhostCallback)
+    public void Init(AttackingGhost attackingGhostCallback, SetPlayerRotation setPlayerRotateCallback)
     {
         attackingGhost = attackingGhostCallback;
+        setPlayerRotate = setPlayerRotateCallback;
+    }
+
+    private void Update()
+    {
+        if (isSucking)
+        {
+
+        }
     }
 
     private void OnEnable()
@@ -67,7 +79,10 @@ public class WeaponControl : MonoBehaviour
         if (exitedGhost)
         {
             if (listOfGhost.Contains(exitedGhost))
+            {
+                exitedGhost.ghostJustGotScuked -= SetAttackingGhosts;
                 listOfGhost.Remove(exitedGhost);
+            }
         }
     }
 
@@ -82,6 +97,7 @@ public class WeaponControl : MonoBehaviour
     private void OnSucking(InputAction.CallbackContext callback)
     {
         isSucking = true;
+        setPlayerRotate?.Invoke(true);
 
         foreach (Ghost ghost in listOfGhost)
         {
@@ -96,6 +112,7 @@ public class WeaponControl : MonoBehaviour
     private void OnStopSucking(InputAction.CallbackContext callback)
     {
         isSucking = false;
+        setPlayerRotate?.Invoke(false);
         SetAttackingGhosts(false);
 
         foreach (Ghost ghost in listOfGhost)
