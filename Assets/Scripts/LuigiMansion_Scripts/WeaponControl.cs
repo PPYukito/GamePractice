@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UniRx;
 
 public class WeaponControl : MonoBehaviour
 {
@@ -15,6 +17,13 @@ public class WeaponControl : MonoBehaviour
     public Transform playerTransform;
     public Transform suckingPoint;
 
+    [Header("Weapon Settings")]
+    public GameObject flashLight;
+    public GameObject tornado;
+
+    [Header("Damage to Ghost Settings")]
+    public float doDamageEverySecond = 0.35f;
+
     private MyPlayer controls;
     private List<Ghost> listOfGhost;
 
@@ -23,6 +32,7 @@ public class WeaponControl : MonoBehaviour
 
     private void Start()
     {
+        SwitchWeapon(false);
         listOfGhost = new List<Ghost>();
         listOfGhost.Clear();
     }
@@ -78,6 +88,7 @@ public class WeaponControl : MonoBehaviour
         }
     }
 
+    // You can use both this method or OnFlash method, same result;
     //private void OnTransform(InputValue value)
     //{
     //    foreach (Ghost ghost in listOfGhost)
@@ -90,7 +101,7 @@ public class WeaponControl : MonoBehaviour
     {
         foreach (Ghost ghost in listOfGhost)
         {
-            ghost.SetBeingAttack(true);
+            ghost.Stunned(true);
         }
     }
 
@@ -98,27 +109,43 @@ public class WeaponControl : MonoBehaviour
     {
         //isSucking = true;
         setPlayerRotate?.Invoke(true);
+        SwitchWeapon(true);
 
         foreach (Ghost ghost in listOfGhost)
         {
+            ghost.SetBeingSuck(true, suckingPoint);
             if (ghost.isStunned)
             {
                 ghost.transform.SetParent(playerTransform);
-                ghost.SetBeingSuck(true, suckingPoint);
             }
         }
+    }
+
+    private void SwitchWeapon(bool suckingMode)
+    {
+        tornado.SetActive(suckingMode);
+        flashLight.SetActive(!suckingMode);
     }
 
     private void OnStopSucking(InputAction.CallbackContext callback)
     {
         //isSucking = false;
         setPlayerRotate?.Invoke(false);
+        SwitchWeapon(false);
         SetAttackingGhosts(false);
 
         foreach (Ghost ghost in listOfGhost)
         {
             ghost.transform.SetParent(null);
             ghost.SetBeingSuck(false);
+        }
+    }
+
+    public void DoDamageToGhosts(float angle)
+    {
+        foreach (Ghost ghost in listOfGhost)
+        {
+            ghost.TakeDamage(angle);
         }
     }
 

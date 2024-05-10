@@ -71,6 +71,24 @@ public partial class @MyPlayer: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Horizontal"",
+                    ""type"": ""Value"",
+                    ""id"": ""4ed3d27d-7d65-44c4-a711-bc170a13338e"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Vertical"",
+                    ""type"": ""Value"",
+                    ""id"": ""46407722-ad40-4b14-9e2b-9966f700cdec"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
                 }
             ],
             ""bindings"": [
@@ -88,7 +106,7 @@ public partial class @MyPlayer: IInputActionCollection2, IDisposable
                 {
                     ""name"": ""WASD"",
                     ""id"": ""00ca640b-d935-4593-8157-c05846ea39b3"",
-                    ""path"": ""Dpad"",
+                    ""path"": ""Dpad(mode=2)"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -315,6 +333,72 @@ public partial class @MyPlayer: IInputActionCollection2, IDisposable
                     ""action"": ""Transform"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""e586f4d4-f09d-4924-a59e-6f2528c8f0ab"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Horizontal"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""557e4636-0781-46fb-a992-937ca925d8ba"",
+                    ""path"": ""<Keyboard>/a"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Horizontal"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""aa12531c-a3a6-4fd8-a71d-a69e9e042fd9"",
+                    ""path"": ""<Keyboard>/d"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Horizontal"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""1D Axis"",
+                    ""id"": ""144748e4-c33d-422e-8866-3d6aedd2b407"",
+                    ""path"": ""1DAxis"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Vertical"",
+                    ""isComposite"": true,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": ""negative"",
+                    ""id"": ""d078aacc-4b01-4dba-9e1c-fb52d99253cf"",
+                    ""path"": ""<Keyboard>/s"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Vertical"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
+                },
+                {
+                    ""name"": ""positive"",
+                    ""id"": ""ed2a9ecf-df16-4bcd-941c-1be921b72fb1"",
+                    ""path"": ""<Keyboard>/w"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Keyboard&Mouse"",
+                    ""action"": ""Vertical"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": true
                 }
             ]
         },
@@ -905,6 +989,8 @@ public partial class @MyPlayer: IInputActionCollection2, IDisposable
         m_Player_Fire = m_Player.FindAction("Fire", throwIfNotFound: true);
         m_Player_ResetCamera = m_Player.FindAction("ResetCamera", throwIfNotFound: true);
         m_Player_Transform = m_Player.FindAction("Transform", throwIfNotFound: true);
+        m_Player_Horizontal = m_Player.FindAction("Horizontal", throwIfNotFound: true);
+        m_Player_Vertical = m_Player.FindAction("Vertical", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -983,6 +1069,8 @@ public partial class @MyPlayer: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Fire;
     private readonly InputAction m_Player_ResetCamera;
     private readonly InputAction m_Player_Transform;
+    private readonly InputAction m_Player_Horizontal;
+    private readonly InputAction m_Player_Vertical;
     public struct PlayerActions
     {
         private @MyPlayer m_Wrapper;
@@ -992,6 +1080,8 @@ public partial class @MyPlayer: IInputActionCollection2, IDisposable
         public InputAction @Fire => m_Wrapper.m_Player_Fire;
         public InputAction @ResetCamera => m_Wrapper.m_Player_ResetCamera;
         public InputAction @Transform => m_Wrapper.m_Player_Transform;
+        public InputAction @Horizontal => m_Wrapper.m_Player_Horizontal;
+        public InputAction @Vertical => m_Wrapper.m_Player_Vertical;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -1016,6 +1106,12 @@ public partial class @MyPlayer: IInputActionCollection2, IDisposable
             @Transform.started += instance.OnTransform;
             @Transform.performed += instance.OnTransform;
             @Transform.canceled += instance.OnTransform;
+            @Horizontal.started += instance.OnHorizontal;
+            @Horizontal.performed += instance.OnHorizontal;
+            @Horizontal.canceled += instance.OnHorizontal;
+            @Vertical.started += instance.OnVertical;
+            @Vertical.performed += instance.OnVertical;
+            @Vertical.canceled += instance.OnVertical;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -1035,6 +1131,12 @@ public partial class @MyPlayer: IInputActionCollection2, IDisposable
             @Transform.started -= instance.OnTransform;
             @Transform.performed -= instance.OnTransform;
             @Transform.canceled -= instance.OnTransform;
+            @Horizontal.started -= instance.OnHorizontal;
+            @Horizontal.performed -= instance.OnHorizontal;
+            @Horizontal.canceled -= instance.OnHorizontal;
+            @Vertical.started -= instance.OnVertical;
+            @Vertical.performed -= instance.OnVertical;
+            @Vertical.canceled -= instance.OnVertical;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -1222,6 +1324,8 @@ public partial class @MyPlayer: IInputActionCollection2, IDisposable
         void OnFire(InputAction.CallbackContext context);
         void OnResetCamera(InputAction.CallbackContext context);
         void OnTransform(InputAction.CallbackContext context);
+        void OnHorizontal(InputAction.CallbackContext context);
+        void OnVertical(InputAction.CallbackContext context);
     }
     public interface IUIActions
     {
