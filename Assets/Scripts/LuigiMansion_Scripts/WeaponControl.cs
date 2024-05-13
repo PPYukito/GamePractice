@@ -67,7 +67,7 @@ public class WeaponControl : MonoBehaviour
         Ghost enteredGhost = other.GetComponent<Ghost>();
         if (enteredGhost)
         {
-            if (!listOfGhost.Contains(enteredGhost))
+            if (enteredGhost.GetHP() > 0 && !listOfGhost.Contains(enteredGhost))
             {
                 listOfGhost.Add(enteredGhost);
                 enteredGhost.ghostJustGotScuked += SetAttackingGhosts;

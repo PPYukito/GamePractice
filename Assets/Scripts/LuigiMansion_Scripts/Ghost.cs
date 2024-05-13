@@ -12,9 +12,11 @@ public class Ghost : MonoBehaviour
     public float suckingSpeed = 1.0f;
     public string captureSphereTag;
     public LayerMask captureSphereLayer;
+    public GameObject damageText;
 
     [Header("Ghost")]
-    public float hp;
+    [SerializeField]
+    private float hp;
     public float heavyDamage;
     public float normalDamage;
     public float distanceToActivateEscape;
@@ -66,15 +68,18 @@ public class Ghost : MonoBehaviour
 
     public void SetBeingSuck(bool sucking, Transform suckingPoint = null)
     {
-        isBeingSuck = sucking;
-
-        // just for testing;
-        if (!isBeingSuck)
-            isStunned = false;
-        else
+        if (hp > 0)
         {
-            if (suckingPoint)
-                this.suckingPoint = suckingPoint;
+            isBeingSuck = sucking;
+            StopAllCoroutines();
+
+            if (!isBeingSuck)
+                StartCoroutine(SetCountDownAfterStunned(3.0f));
+            else
+            {
+                if (suckingPoint)
+                    this.suckingPoint = suckingPoint;
+            }
         }
     }
 
@@ -82,12 +87,11 @@ public class Ghost : MonoBehaviour
     {
         isStunned = attacking;
 
-        if (isStunned)
-        {
-            DOVirtual.Int(4, 0, 4, TweenCallback)
-                .SetEase(Ease.Linear)
-                .OnComplete(() => isStunned = false);
-        }
+        //show hp
+        GeneralInstance.instance.ResetGhostColor(this);
+        GeneralInstance.instance.ShowHP(this);
+
+        StartCoroutine(SetCountDownAfterStunned(4.0f));
     }
 
     public void TakeDamage(float angle)
@@ -98,10 +102,27 @@ public class Ghost : MonoBehaviour
             hp -= normalDamage;
 
         //show to UI
+        GeneralInstance.instance.ShowHP(this);
+
+        if (hp <= 0)
+        {
+            isStunned = false;
+            isBeingSuck = false;
+            transform.parent = null;
+            //destroy ghost;
+        }
     }
 
-    private void TweenCallback(int num)
+    public float GetHP()
     {
-        // it needs to be put in;
+        return hp;
+    }
+
+    IEnumerator SetCountDownAfterStunned(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+
+        isStunned = false;
+        GeneralInstance.instance.FadeGhostHP(this);
     }
 }
