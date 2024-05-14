@@ -27,7 +27,7 @@ public class WeaponControl : MonoBehaviour
     private MyPlayer controls;
     private List<Ghost> listOfGhost;
 
-    //private bool isSucking = false;
+    private bool isSucking = false;
     //private bool isBlowing = false;
 
     private void Start()
@@ -64,13 +64,17 @@ public class WeaponControl : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Ghost enteredGhost = other.GetComponent<Ghost>();
-        if (enteredGhost)
+        if (!isSucking)
         {
-            if (enteredGhost.GetHP() > 0 && !listOfGhost.Contains(enteredGhost))
+            Ghost enteredGhost = other.GetComponent<Ghost>();
+            if (enteredGhost)
             {
-                listOfGhost.Add(enteredGhost);
-                enteredGhost.ghostJustGotScuked += SetAttackingGhosts;
+                if (enteredGhost.GetHP() > 0 && !listOfGhost.Contains(enteredGhost))
+                {
+                    listOfGhost.Add(enteredGhost);
+                    enteredGhost.ghostJustGotScuked += GhostGotSucked;
+                    enteredGhost.ghostDead += DestroyGhost;
+                }
             }
         }
     }
@@ -82,7 +86,8 @@ public class WeaponControl : MonoBehaviour
         {
             if (listOfGhost.Contains(exitedGhost))
             {
-                exitedGhost.ghostJustGotScuked -= SetAttackingGhosts;
+                exitedGhost.ghostDead -= DestroyGhost;
+                exitedGhost.ghostJustGotScuked -= GhostGotSucked;
                 listOfGhost.Remove(exitedGhost);
             }
         }
@@ -107,7 +112,7 @@ public class WeaponControl : MonoBehaviour
 
     private void OnSucking(InputAction.CallbackContext callback)
     {
-        //isSucking = true;
+        isSucking = true;
         setPlayerRotate?.Invoke(true);
         SwitchWeapon(true);
 
@@ -129,10 +134,7 @@ public class WeaponControl : MonoBehaviour
 
     private void OnStopSucking(InputAction.CallbackContext callback)
     {
-        //isSucking = false;
-        setPlayerRotate?.Invoke(false);
-        SwitchWeapon(false);
-        SetAttackingGhosts(false);
+        StopSucking();
 
         foreach (Ghost ghost in listOfGhost)
         {
@@ -141,15 +143,30 @@ public class WeaponControl : MonoBehaviour
         }
     }
 
+    private void StopSucking()
+    {
+        GhostGotSucked(false);
+        isSucking = false;
+        setPlayerRotate?.Invoke(false);
+        SwitchWeapon(false);
+    }
+
+    private void DestroyGhost(Ghost ghost)
+    {
+        StopSucking();
+        listOfGhost.Remove(ghost);
+    }
+
     public void DoDamageToGhosts(float angle)
     {
-        foreach (Ghost ghost in listOfGhost)
+        for (int i = 0; i < listOfGhost.Count; i++)
         {
-            ghost.TakeDamage(angle);
+            if (!listOfGhost[i].IsDead)
+                listOfGhost[i].TakeDamage(angle);
         }
     }
 
-    private void SetAttackingGhosts(bool setAttack)
+    private void GhostGotSucked(bool setAttack)
     {
         attackingGhost?.Invoke(setAttack);
     }

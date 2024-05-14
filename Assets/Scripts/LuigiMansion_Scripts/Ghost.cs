@@ -8,6 +8,9 @@ public class Ghost : MonoBehaviour
     public delegate void GhostGetSucked(bool getSucked);
     public GhostGetSucked ghostJustGotScuked;
 
+    public delegate void Dead(Ghost ghost);
+    public Dead ghostDead;
+
     [Header("Ghost Capture Setting")]
     public float suckingSpeed = 1.0f;
     public string captureSphereTag;
@@ -28,24 +31,26 @@ public class Ghost : MonoBehaviour
     private bool isBeingSuck = false;
 
     private Transform suckingPoint;
+    private bool dead = false;
+    public bool IsDead
+    {
+        get { return dead; }
+    }
 
     private void Update()
     {
-        if (isBeingSuck)
+        if (isBeingSuck && isStunned && !dead)
         {
-            if (isStunned)
+            // move to sucking point;
+            Vector3 suckVector = (suckingPoint.position - transform.position);
+            Vector3 escapeVector = (transform.position - suckingPoint.position);
+
+            transform.position += suckVector * Time.deltaTime * suckingSpeed;
+            transform.forward = escapeVector;
+
+            if (Vector3.Distance(transform.position, suckingPoint.position) <= distanceToActivateEscape)
             {
-                // move to sucking point;
-                Vector3 suckVector = (suckingPoint.position - transform.position);
-                Vector3 escapeVector = (transform.position - suckingPoint.position);
-
-                transform.position += suckVector * Time.deltaTime * suckingSpeed;
-                transform.forward = escapeVector;
-
-                if (Vector3.Distance(transform.position, suckingPoint.position) <= distanceToActivateEscape)
-                {
-                    ghostJustGotScuked?.Invoke(true);
-                }
+                ghostJustGotScuked?.Invoke(true);
             }
         }
     }
@@ -96,20 +101,25 @@ public class Ghost : MonoBehaviour
 
     public void TakeDamage(float angle)
     {
-        if (angle >= 130)
-            hp -= heavyDamage;
-        else
-            hp -= normalDamage;
-
-        //show to UI
-        GeneralInstance.instance.ShowHP(this);
-
-        if (hp <= 0)
+        if (!dead)
         {
-            isStunned = false;
-            isBeingSuck = false;
-            transform.parent = null;
-            //destroy ghost;
+            if (angle >= 130)
+                hp -= heavyDamage;
+            else
+                hp -= normalDamage;
+
+            //show to UI
+            GeneralInstance.instance.ShowHP(this);
+
+            if (hp <= 0)
+            {
+                //destroy ghost;
+                dead = true;
+                isStunned = false;
+                isBeingSuck = false;
+                ghostDead?.Invoke(this);
+                DestroyGhostSeq();
+            }
         }
     }
 
@@ -124,5 +134,21 @@ public class Ghost : MonoBehaviour
 
         isStunned = false;
         GeneralInstance.instance.FadeGhostHP(this);
+    }
+
+    private Sequence DestroyGhostSeq()
+    {
+        Sequence seq = DOTween.Sequence();
+
+        seq.Append(transform.DOScale((Vector3.one / 10), 1.5f));
+        seq.AppendCallback(DestroyGhost);
+
+        return seq;
+    }
+
+    private void DestroyGhost()
+    {
+        transform.parent = null;
+        Destroy(gameObject);
     }
 }
