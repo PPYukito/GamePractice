@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using System;
+using Cinemachine;
 
 public class GeneralInstance : MonoBehaviour
 {
@@ -10,8 +11,13 @@ public class GeneralInstance : MonoBehaviour
 
     [Header("Display Settings")]
     public RectTransform canvas;
-    public Camera cam;
     public GameObject ghostHPGameObj;
+
+    [Header("Camera Settings")]
+    public Camera cam;
+    public CinemachineVirtualCamera cinemachineCam;
+    public float shakeIntensity;
+    public float shakeTime;
 
     [Header("Ghosts")]
     public List<Ghost> listOfGhostInScene;
@@ -19,6 +25,7 @@ public class GeneralInstance : MonoBehaviour
     //private List<Ghost>
     private Dictionary<Ghost, GhostHealth> ghostDisplays;
     private IDisposable dispose;
+    private CinemachineBasicMultiChannelPerlin cineBasMulChanlPerl;
 
     private void Awake()
     {
@@ -35,6 +42,8 @@ public class GeneralInstance : MonoBehaviour
             GhostHealth ghostHPComp = Instantiate(ghostHPGameObj, canvas).GetComponent<GhostHealth>();
             ghostDisplays.Add(ghost, ghostHPComp);
         }
+
+        cineBasMulChanlPerl = cinemachineCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
     }
 
     private void Update()
@@ -43,6 +52,18 @@ public class GeneralInstance : MonoBehaviour
         {
             ghostData.Value.transform.position = cam.WorldToScreenPoint(ghostData.Key.transform.position);
         }
+    }
+
+    public void ShakeCamera()
+    {
+        cineBasMulChanlPerl.m_AmplitudeGain = shakeIntensity;
+        StartCoroutine(StopShake());
+    }
+
+    IEnumerator StopShake()
+    {
+        yield return new WaitForSeconds(shakeTime);
+        cineBasMulChanlPerl.m_AmplitudeGain = 0;
     }
 
     public void ShowHP(Ghost ghost)

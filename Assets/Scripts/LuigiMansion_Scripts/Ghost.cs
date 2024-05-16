@@ -148,6 +148,7 @@ public class Ghost : MonoBehaviour
 
     private void DestroyGhost()
     {
+        GeneralInstance.instance.ShakeCamera();
         transform.parent = null;
         Destroy(gameObject);
     }

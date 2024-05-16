@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UniRx;
+using DG.Tweening;
 
 public class WeaponControl : MonoBehaviour
 {
@@ -17,8 +17,13 @@ public class WeaponControl : MonoBehaviour
     public Transform playerTransform;
     public Transform suckingPoint;
 
-    [Header("Weapon Settings")]
+    [Header("Light Settings")]
     public GameObject flashLight;
+    public Renderer lightMeshRenderer;
+    public float minLight;
+    public float maxLight;
+
+    [Header("Tornado Settings")]
     public GameObject tornado;
 
     [Header("Damage to Ghost Settings")]
@@ -29,6 +34,8 @@ public class WeaponControl : MonoBehaviour
 
     private bool isSucking = false;
     //private bool isBlowing = false;
+
+    private Material lightMat;
 
     private void Start()
     {
@@ -54,6 +61,7 @@ public class WeaponControl : MonoBehaviour
         }
 
         controls.Player.Enable();
+        lightMat = lightMeshRenderer.material;
     }
 
     private void OnDisable()
@@ -104,10 +112,25 @@ public class WeaponControl : MonoBehaviour
 
     private void OnFlash(InputAction.CallbackContext callback)
     {
+        DOVirtual.Float(minLight, maxLight, 0.2f, SetLightflash)
+            .OnComplete(ResetLight);
+
+        GeneralInstance.instance.ShakeCamera();
+
         foreach (Ghost ghost in listOfGhost)
         {
             ghost.Stunned(true);
         }
+    }
+
+    private void SetLightflash(float lightValue)
+    {
+        lightMat.SetFloat("Opacity", lightValue);
+    }
+
+    private void ResetLight()
+    {
+        DOVirtual.Float(maxLight, minLight, 1.2f, SetLightflash);
     }
 
     private void OnSucking(InputAction.CallbackContext callback)
