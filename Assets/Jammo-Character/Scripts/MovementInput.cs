@@ -59,6 +59,8 @@ public class MovementInput : MonoBehaviour {
 	private PlayerInput _playerInput;
 #endif
 
+	public bool SceneZeldaWallBug = false;
+
 	public float verticalVel;
     private Vector3 moveVector;
 
@@ -112,7 +114,8 @@ public class MovementInput : MonoBehaviour {
 
 	private void LateUpdate()
 	{
-		CameraRotation();
+		if (SceneZeldaWallBug)
+			CameraRotation();
 	}
 
 	void PlayerMoveAndRotation() {
