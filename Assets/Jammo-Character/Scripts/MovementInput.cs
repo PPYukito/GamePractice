@@ -77,23 +77,24 @@ public class MovementInput : MonoBehaviour {
 #if ENABLE_INPUT_SYSTEM
 			return _playerInput.currentControlScheme == "KeyboardMouse";
 #else
-				return false;
+			return false;
 #endif
 		}
 	}
 
 	private void Start ()
 	{
+        _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
+
+		anim = this.GetComponent<Animator> ();
+		controller = this.GetComponent<CharacterController> ();
+		_input = GetComponent<StarterAssetsInputs>();
 #if ENABLE_INPUT_SYSTEM
-		_playerInput = GetComponent<PlayerInput>();
+        _playerInput = GetComponent<PlayerInput>();
 #else
 		Debug.LogError( "Starter Assets package is missing dependencies. Please use Tools/Starter Assets/Reinstall Dependencies to fix it");
 #endif
-		_input = GetComponent<StarterAssetsInputs>();
-
-		anim = this.GetComponent<Animator> ();
 		cam = Camera.main;
-		controller = this.GetComponent<CharacterController> ();
 	}
 	
 	private void Update () {
