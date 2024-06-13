@@ -266,8 +266,9 @@ public class MyJammoPlayerController : MonoBehaviour
         // update animator if using character
         if (_hasAnimator)
         {
-            _animator.SetFloat(_animIDSpeed, _animationBlend);
-            _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+            //_animator.SetFloat(_animIDSpeed, _animationBlend);
+            //_animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
+            //_animator.SetFloat("Blend", Speed, StartAnimTime, Time.deltaTime);
         }
     }
 
